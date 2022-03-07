@@ -1,7 +1,7 @@
-function [] = RDC_to_rangeDOA_AWR2243_azimuth(RDC, K, M_pulse, MTI, OF, fNameOut)
+function [] = RDC_to_rangeDOA_AWR2243_elevation(RDC, K, M_pulse, MTI, OF, fNameOut)
         
         numTX = 3;
-        numRX = 4;
+        numRX = 2;
         NTS = size(RDC,1); %64 Number of time samples per sweep
         NoC = 88; % Number of chirp loops
         NPpF = numTX*NoC; % Number of pulses per frame
@@ -29,8 +29,9 @@ function [] = RDC_to_rangeDOA_AWR2243_azimuth(RDC, K, M_pulse, MTI, OF, fNameOut
         adcStartTime = 5e-6;
         rampEndTime = 50e-6;
         
-        %% If BPM and TDM
-        RDC(:, :, 9:end) = [];
+        %% If BPM and TDM, merge 3rd channel of antenna 1 and 1st channel of antenna 2
+%         RDC = cat(3, RDC(:, :, 3), RDC(:, :, 9));
+        RDC = cat(3, sum(RDC(:, :, 3:6), 3), sum(RDC(:, :, 9:end), 3));
         
         %% Range Angle Map
         
@@ -48,7 +49,8 @@ function [] = RDC_to_rangeDOA_AWR2243_azimuth(RDC, K, M_pulse, MTI, OF, fNameOut
         colormap(jet)
         
         opticFlow = opticalFlowHS;
-        numTX2 = 2; % if BPM and TDM keep this 2, not 3
+        numTX2 = 1; % if BPM and TDM keep this 1 for elevation
+        
         %% MTI
         h = [1 -2 1]; % [1 -2 1]
         if MTI
@@ -127,7 +129,7 @@ function [] = RDC_to_rangeDOA_AWR2243_azimuth(RDC, K, M_pulse, MTI, OF, fNameOut
                     
                 end
                 
-                xlabel('Azimuth')   
+                xlabel('Elevation')   
                 ylabel('Range (m)')
 %                 set(gca, 'CLim',[-35,0]); % [-35,0]
                 axis([-60 60 0 3])
@@ -140,7 +142,7 @@ function [] = RDC_to_rangeDOA_AWR2243_azimuth(RDC, K, M_pulse, MTI, OF, fNameOut
         
         
         fname = [fNameOut(1:end-4) '_K' int2str(K) '_Mpulse' ...
-            int2str(M_pulse) '_MTI' int2str(MTI) '_OF' int2str(OF) '_azimuth.avi'];
+            int2str(M_pulse) '_MTI' int2str(MTI) '_OF' int2str(OF) '_elevation.avi'];
         writerObj = VideoWriter(fname);
         writerObj.FrameRate = fps;
         open(writerObj);
