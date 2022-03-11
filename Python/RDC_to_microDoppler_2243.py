@@ -5,7 +5,7 @@ from helpers import stft
 def RDC_microDoppler(RDC, fname, params):
 
     # Range FFT
-    RDC = np.fft.fft(RDC)
+    # RDC = np.fft.fft(RDC, axis=0)
 
     rBin = np.arange(18, 25)  # 20 30
     nfft = 2 ** 12
